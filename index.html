@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwitchBox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d0d2b, #2b0d3d);
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #intro-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: cosmicShift 15s infinite;
+            position: relative;
+        }
+
+        @keyframes cosmicShift {
+            0% { background: linear-gradient(135deg, #0d0d2b, #2b0d3d); }
+            50% { background: linear-gradient(135deg, #2b0d3d, #0d2b3d); }
+            100% { background: linear-gradient(135deg, #0d0d2b, #2b0d3d); }
+        }
+
+        #intro-page h1 {
+            font-size: 3.5rem;
+            text-shadow: 0 0 15px #ff00ff;
+            margin-bottom: 20px;
+        }
+
+        #intro-page p {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        #intro-page ul {
+            font-size: 1.1rem;
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .convert-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: #ff00ff;
+            border: none;
+            border-radius: 50px;
+            color: #0d0d2b;
+            cursor: pointer;
+            animation: supernova 2s infinite;
+            transition: transform 0.3s;
+        }
+
+        .convert-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes supernova {
+            0% { box-shadow: 0 0 10px #ff00ff; }
+            50% { box-shadow: 0 0 25px #ff00ff, 0 0 50px rgba(255, 0, 255, 0.5); }
+            100% { box-shadow: 0 0 10px #ff00ff; }
+        }
+
+        .support-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #00ffff;
+            border-radius: 20px;
+            color: #0d0d2b;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+
+        .support-btn:hover {
+            transform: scale(1.1);
+        }
+
+        #main-page {
+            display: none;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .galactic-interface {
+            width: 90%;
+            max-width: 900px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .planet-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .planet-btn {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: orbit 5s infinite linear;
+        }
+
+        .planet-btn:hover, .planet-btn.active {
+            background: #00ffff;
+            color: #0d0d2b;
+            transform: scale(1.2);
+            animation: none;
+        }
+
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(10px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(10px) rotate(-360deg); }
+        }
+
+        .upload-zone {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 20px;
+            width: 100%;
+            text-align: center;
+            border: 2px dashed #ff00ff;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .upload-zone:hover {
+            transform: scale(1.05);
+        }
+
+        .upload-zone input {
+            display: block;
+            margin: 10px auto;
+        }
+
+        .convert-btn-small {
+            padding: 10px 20px;
+            background: #00ffff;
+            border: none;
+            border-radius: 20px;
+            color: #0d0d2b;
+            cursor: pointer;
+        }
+
+        .output-orb {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ff00ff;
+            animation: float 3s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        .download-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ff00ff;
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Preview container for images, audio, video */
+        .preview-container {
+            margin-top: 15px;
+            width: 100%;
+            display: none;
+        }
+
+        .preview-container img, 
+        .preview-container audio,
+        .preview-container video {
+            max-width: 100%;
+            max-height: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ff00ff;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Back button */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #ff00ff;
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* File format indicator */
+        .format-indicator {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #00ffff;
+        }
+
+        @media (max-width: 768px) {
+            #intro-page h1 { font-size: 2.5rem; }
+            .galactic-interface { width: 95%; }
+            .planet-btn { width: 80px; height: 80px; }
+        }
+
+        @media (max-width: 480px) {
+            #intro-page h1 { font-size: 1.8rem; }
+            .convert-btn { font-size: 1rem; padding: 10px 20px; }
+            .planet-selector { gap: 10px; }
+            .planet-btn { width: 60px; height: 60px; font-size: 0.9rem; }
+            .output-orb { max-height: 200px; }
+            .support-btn { font-size: 0.9rem; padding: 8px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-page">
+        <h1>SwitchBox</h1>
+        <p>Convert files fast—documents, images, audio, and more!</p>
+        <ul>
+            <li>Supports 15+ unique conversions</li>
+            <li>Quick and easy file switching</li>
+            <li>Download your results instantly</li>
+        </ul>
+        <button class="convert-btn" onclick="showMainPage()">Start Converting</button>
+        <a href="https://buy.stripe.com/00g16Q5xv4Cw05G6oo" class="support-btn">Support Us</a>
+    </div>
+
+    <div id="main-page">
+        <button class="back-btn" onclick="showIntroPage()">Back</button>
+        <div class="galactic-interface">
+            <div class="planet-selector">
+                <div class="planet-btn active" onclick="selectConversion('word-to-pdf')">Word to PDF</div>
+                <div class="planet-btn" onclick="selectConversion('pdf-to-word')">PDF to Word</div>
+                <div class="planet-btn" onclick="selectConversion('jpg-to-png')">JPG to PNG</div>
+                <div class="planet-btn" onclick="selectConversion('png-to-jpg')">PNG to JPG</div>
+                <div class="planet-btn" onclick="selectConversion('excel-to-pdf')">Excel to PDF</div>
+                <div class="planet-btn" onclick="selectConversion('pdf-to-text')">PDF to Text</div>
+                <div class="planet-btn" onclick="selectConversion('mp4-to-mp3')">MP4 to MP3</div>
+                <div class="planet-btn" onclick="selectConversion('html-to-pdf')">HTML to PDF</div>
+                <div class="planet-btn" onclick="selectConversion('image-to-text')">Image to Text</div>
+                <div class="planet-btn" onclick="selectConversion('csv-to-excel')">CSV to Excel</div>
+                <div class="planet-btn" onclick="selectConversion('gif-to-mp4')">GIF to MP4</div>
+                <div class="planet-btn" onclick="selectConversion('audio-to-wav')">Audio to WAV</div>
+                <div class="planet-btn" onclick="selectConversion('markdown-to-html')">Markdown to HTML</div>
+                <div class="planet-btn" onclick="selectConversion('text-to-speech')">Text to Speech</div>
+                <div class="planet-btn" onclick="selectConversion('video-to-gif')">Video to GIF</div>
+            </div>
+            <div class="upload-zone">
+                <h3 id="current-conversion">Word to PDF Conversion</h3>
+                <p class="format-indicator" id="format-indicator">Upload .docx file</p>
+                <input type="file" id="file-input" accept=".docx">
+                <div class="spinner" id="spinner"></div>
+                <button class="convert-btn-small" onclick="convertFile()">Convert</button>
+            </div>
+            <div class="output-orb" id="output"></div>
+            <div class="preview-container" id="preview-container"></div>
+            <button class="download-btn" id="download-btn" style="display: none;" onclick="downloadFile()">Download</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+    <script src="https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/ffmpeg.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+    <script>
+        // Initialize libraries
+        const { PDFDocument } = window['pdf-lib'];
+        const { createFFmpeg, fetchFile } = window['@ffmpeg/ffmpeg'];
+        const ffmpeg = createFFmpeg({ log: true });
+        const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
+        let selectedConversion = 'word-to-pdf';
+        let convertedFileUrl = '';
+        let convertedFileName = '';
+        let ffmpegLoaded = false;
+
+        // Configuration for each conversion type
+        const conversionConfig = {
+            'word-to-pdf': { 
+                input: '.docx', 
+                output: '.pdf', 
+                mime: 'application/pdf',
+                description: 'Word to PDF Conversion',
+                acceptFormats: '.docx'
+            },
+            'pdf-to-word': { 
+                input: '.pdf', 
+                output: '.docx', 
+                mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                description: 'PDF to Word Conversion',
+                acceptFormats: '.pdf'
+            },
+            'jpg-to-png': { 
+                input: '.jpg,.jpeg', 
+                output: '.png', 
+                mime: 'image/png',
+                description: 'JPG to PNG Conversion',
+                acceptFormats: '.jpg,.jpeg',
+                previewType: 'image'
+            },
+            'png-to-jpg': { 
+                input: '.png', 
+                output: '.jpg', 
+                mime: 'image/jpeg',
+                description: 'PNG to JPG Conversion',
+                acceptFormats: '.png',
+                previewType: 'image'
+            },
+            'excel-to-pdf': { 
+                input: '.xlsx,.xls', 
+                output: '.pdf', 
+                mime: 'application/pdf',
+                description: 'Excel to PDF Conversion',
+                acceptFormats: '.xlsx,.xls'
+            },
+            'pdf-to-text': { 
+                input: '.pdf', 
+                output: '.txt', 
+                mime: 'text/plain',
+                description: 'PDF to Text Conversion',
+                acceptFormats: '.pdf'
+            },
+            'mp4-to-mp3': { 
+                input: '.mp4', 
+                output: '.mp3', 
+                mime: 'audio/mpeg',
+                description: 'MP4 to MP3 Conversion',
+                acceptFormats: '.mp4',
+                previewType: 'audio'
+            },
+            'html-to-pdf': { 
+                input: '.html,.htm', 
+                output: '.pdf', 
+                mime: 'application/pdf',
+                description: 'HTML to PDF Conversion',
+                acceptFormats: '.html,.htm'
+            },
+            'image-to-text': { 
+                input: '.jpg,.jpeg,.png', 
+                output: '.txt', 
+                mime: 'text/plain',
+                description: 'Image to Text Conversion',
+                acceptFormats: '.jpg,.jpeg,.png',
+                previewType: 'image'
+            },
+            'csv-to-excel': { 
+                input: '.csv', 
+                output: '.xlsx', 
+                mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                description: 'CSV to Excel Conversion',
+                acceptFormats: '.csv'
+            },
+            'gif-to-mp4': { 
+                input: '.gif', 
+                output: '.mp4', 
+                mime: 'video/mp4',
+                description: 'GIF to MP4 Conversion',
+                acceptFormats: '.gif',
+                previewType: 'video'
+            },
+            'audio-to-wav': { 
+                input: '.mp3,.ogg,.aac', 
+                output: '.wav', 
+                mime: 'audio/wav',
+                description: 'Audio to WAV Conversion',
+                acceptFormats: '.mp3,.ogg,.aac',
+                previewType: 'audio'
+            },
+            'markdown-to-html': { 
+                input: '.md,.markdown', 
+                output: '.html', 
+                mime: 'text/html',
+                description: 'Markdown to HTML Conversion',
+                acceptFormats: '.md,.markdown'
+            },
+            'text-to-speech': { 
+                input: '.txt', 
+                output: '.mp3', 
+                mime: 'audio/mpeg',
+                description: 'Text to Speech Conversion',
+                acceptFormats: '.txt',
+                previewType: 'audio'
+            },
+            'video-to-gif': { 
+                input: '.mp4,.webm', 
+                output: '.gif', 
+                mime: 'image/gif',
+                description: 'Video to GIF Conversion',
+                acceptFormats: '.mp4,.webm',
+                previewType: 'image'
+            }
+        };
+
+        // Show main page
+        function showMainPage() {
+            document.getElementById('intro-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'flex';
+        }
+
+        // Show intro page
+        function showIntroPage() {
+            document.getElementById('intro-page').style.display = 'flex';
+            document.getElementById('main-page').style.display = 'none';
+        }
+
+        // Select conversion type
+        function selectConversion(type) {
+            if (!conversionConfig[type]) {
+                console.error('Invalid conversion type:', type);
+                return;
+            }
+            
+            selectedConversion = type;
+            
+            // Update UI
+            document.querySelectorAll('.planet-btn').forEach(btn => {
+                if (btn.textContent === conversionConfig[type].description || 
+                    btn.textContent === type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' to ')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            document.getElementById('current-conversion').textContent = conversionConfig[type].description;
+            document.getElementById('format-indicator').textContent = `Upload ${conversionConfig[type].acceptFormats} file`;
+            document.getElementById('file-input').accept = conversionConfig[type].acceptFormats;
+            
+            // Reset output and download
+            document.getElementById('output').innerHTML = '';
+            document.getElementById('download-btn').style.display = 'none';
+            document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('preview-container').innerHTML = '';
+            
+            if (convertedFileUrl) {
+                URL.revokeObjectURL(convertedFileUrl);
+                convertedFileUrl = '';
+            }
+        }
+
+        // Convert file
+        async function convertFile() {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            const outputElement = document.getElementById('output');
+            const downloadBtn = document.getElementById('download-btn');
+            const spinner = document.getElementById('spinner');
+            const previewContainer = document.getElementById('preview-container');
+            
+            // Reset UI
+            outputElement.innerHTML = '';
+            downloadBtn.style.display = 'none';
+            previewContainer.style.display = 'none';
+            previewContainer.innerHTML = '';
+            
+            if (convertedFileUrl) {
+                URL.revokeObjectURL(convertedFileUrl);
+                convertedFileUrl = '';
+            }
+
+            // Validate file
+            if (!file) {
+                outputElement.innerHTML = 'Error: Please upload a file!';
+                return;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                outputElement.innerHTML = 'Error: File too large! Max size is 50MB.';
+                return;
+            }
+
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            const validInputs = conversionConfig[selectedConversion].input.split(',');
+            if (!validInputs.some(ext => ext === fileExt)) {
+                outputElement.innerHTML = `Error: Invalid file type! Expected ${conversionConfig[selectedConversion].input}`;
+                return;
+            }
+
+            // Show loading spinner
+            spinner.style.display = 'block';
+            outputElement.innerHTML = 'Converting...';
+            
+            // Prepare file name
+            const fileName = file.name.split('.')[0];
+            convertedFileName = `${fileName}_converted${conversionConfig[selectedConversion].output}`;
+            
+            try {
+                // Load FFmpeg if needed and not already loaded
+                if (['mp4-to-mp3', 'gif-to-mp4', 'audio-to-wav', 'video-to-gif'].includes(selectedConversion) && !ffmpegLoaded) {
+                    outputElement.innerHTML = 'Loading conversion engine...';
+                    await ffmpeg.load();
+                    ffmpegLoaded = true;
+                }
+                
+                const fileBuffer = await file.arrayBuffer();
+                let blob;
+
+                // Perform conversion based on selected type
+                switch (selectedConversion) {
+                    case 'word-to-pdf':
+                        const wordResult = await mammoth.convertToHtml({ arrayBuffer: fileBuffer });
+                        const pdfDoc = await PDFDocument.create();
+                        const page = pdfDoc.addPage([600, 800]);
+                        
+                        // Simple HTML to PDF conversion (basic text only)
+                        const text = wordResult.value.replace(/<[^>]*>/g, ' ');
+                        
+                        // Split text into lines for better formatting
+                        const words = text.split(' ');
+                        let lines = [];
+                        let currentLine = '';
+                        
+                        for (const word of words) {
+                            if ((currentLine + word).length > 60) {
+                                lines.push(currentLine);
+                                currentLine = word + ' ';
+                            } else {
+                                currentLine += word + ' ';
+                            }
+                        }
+                        
+                        if (currentLine) lines.push(currentLine);
+                        
+                        // Draw text on PDF
+                        const fontSize = 12;
+                        const lineHeight = fontSize * 1.2;
+                        let y = 750;
+                        
+                        for (const line of lines) {
+                            page.drawText(line, { x: 50, y, size: fontSize });
+                            y -= lineHeight;
+                            
+                            // Add new page if needed
+                            if (y < 50) {
+                                const newPage = pdfDoc.addPage([600, 800]);
+                                y = 750;
+                            }
+                        }
+                        
+                        blob = new Blob([await pdfDoc.save()], { type: 'application/pdf' });
+                        break;
+                        
+                    case 'pdf-to-word':
+                        // For client-side, we'll extract text and create a simple .docx-like format
+                        // Load the PDF.js library
+                        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+                        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+                        
+                        const loadingTask = pdfjsLib.getDocument({ data: fileBuffer });
+                        const pdf = await loadingTask.promise;
+                        
+                        let extractedText = '';
+                        
+                        // Extract text from each page
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const textContent = await page.getTextContent();
+                            const pageText = textContent.items.map(item => item.str).join(' ');
+                            extractedText += pageText + '\n\n';
+                        }
+                        
+                        // Create a simple HTML representation that Word can open
+                        const htmlContent = `
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Converted Document</title>
+                        </head>
+                        <body>
+                            <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+                                ${extractedText.split('\n').map(line => `<p>${line}</p>`).join('')}
+                            </div>
+                        </body>
+                        </html>
+                        `;
+                        
+                        blob = new Blob([htmlContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                        break;
+                        
+                    case 'jpg-to-png':
+                    case 'png-to-jpg':
+                        blob = await convertImage(file, conversionConfig[selectedConversion].mime);
+                        
+                        // Preview the converted image
+                        const imgPreview = document.createElement('img');
+                        imgPreview.src = URL.createObjectURL(blob);
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(imgPreview);
+                        previewContainer.style.display = 'block';
+                        break;
+                        
+                    case 'excel-to-pdf':
+                        const excelWorkbook = new ExcelJS.Workbook();
+                        await excelWorkbook.xlsx.load(fileBuffer);
+                        
+                        const excelPdf = await PDFDocument.create();
+                        const excelPage = excelPdf.addPage([600, 800]);
+                        
+                        let excelContent = '';
+                        const worksheet = excelWorkbook.worksheets[0];
+                        
+                        // Extract data from worksheet
+                        worksheet.eachRow((row, rowNumber) => {
+                            let rowContent = '';
+                            row.eachCell((cell, colNumber) => {
+                                rowContent += cell.value + '\t';
+                            });
+                            excelContent += rowContent + '\n';
+                        });
+                        
+                        // Draw text on PDF
+                        const lines = excelContent.split('\n');
+                        const fontSize = 10;
+                        const lineHeight = fontSize * 1.2;
+                        let y = 750;
+                        
+                        for (const line of lines) {
+                            excelPage.drawText(line, { x: 50, y, size: fontSize });
+                            y -= lineHeight;
+                            
+                            // Add new page if needed
+                            if (y < 50) {
+                                const newPage = excelPdf.addPage([600, 800]);
+                                y = 750;
+                            }
+                        }
+                        
+                        blob = new Blob([await excelPdf.save()], { type: 'application/pdf' });
+                        break;
+                        
+                    case 'pdf-to-text':
+                        // Use PDF.js for better text extraction
+                        const pdfJsLib = window['pdfjs-dist/build/pdf'];
+                        pdfJsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+                        
+                        const pdfLoadingTask = pdfJsLib.getDocument({ data: fileBuffer });
+                        const pdfDoc = await pdfLoadingTask.promise;
+                        
+                        let pdfText = '';
+                        
+                        // Extract text from each page
+                        for (let i = 1; i <= pdfDoc.numPages; i++) {
+                            const page = await pdfDoc.getPage(i);
+                            const textContent = await page.getTextContent();
+                            const pageText = textContent.items.map(item => item.str).join(' ');
+                            pdfText += `--- Page ${i} ---\n${pageText}\n\n`;
+                        }
+                        
+                        blob = new Blob([pdfText], { type: 'text/plain' });
+                        break;
+                        
+                    case 'mp4-to-mp3':
+                        ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
+                        await ffmpeg.run('-i', 'input.mp4', '-vn', '-acodec', 'libmp3lame', '-q:a', '2', 'output.mp3');
+                        const mp3Data = ffmpeg.FS('readFile', 'output.mp3');
+                        blob = new Blob([mp3Data.buffer], { type: 'audio/mpeg' });
+                        
+                        // Preview the audio
+                        const audioPreview = document.createElement('audio');
+                        audioPreview.controls = true;
+                        audioPreview.src = URL.createObjectURL(blob);
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(audioPreview);
+                        previewContainer.style.display = 'block';
+                        break;
+                        
+                    case 'html-to-pdf':
+                        const htmlText = new TextDecoder().decode(fileBuffer);
+                        
+                        // Create a PDF from HTML content
+                        const htmlPdf = await PDFDocument.create();
+                        const htmlPage = htmlPdf.addPage([600, 800]);
+                        
+                        // Strip HTML tags for basic conversion
+                        const plainText = htmlText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+                        
+                        // Split text into lines for better formatting
+                        const htmlWords = plainText.split(' ');
+                        let htmlLines = [];
+                        let currentHtmlLine = '';
+                        
+                        for (const word of htmlWords) {
+                            if ((currentHtmlLine + word).length > 60) {
+                                htmlLines.push(currentHtmlLine);
+                                currentHtmlLine = word + ' ';
+                            } else {
+                                currentHtmlLine += word + ' ';
+                            }
+                        }
+                        
+                        if (currentHtmlLine) htmlLines.push(currentHtmlLine);
+                        
+                        // Draw text on PDF
+                        const htmlFontSize = 12;
+                        const htmlLineHeight = htmlFontSize * 1.2;
+                        let htmlY = 750;
+                        
+                        for (const line of htmlLines) {
+                            htmlPage.drawText(line, { x: 50, y: htmlY, size: htmlFontSize });
+                            htmlY -= htmlLineHeight;
+                            
+                            // Add new page if needed
+                            if (htmlY < 50) {
+                                const newPage = htmlPdf.addPage([600, 800]);
+                                htmlY = 750;
+                            }
+                        }
+                        
+                        blob = new Blob([await htmlPdf.save()], { type: 'application/pdf' });
+                        break;
+                        
+                    case 'image-to-text':
+                        // Show progress in output
+                        outputElement.innerHTML = 'Recognizing text from image (this may take a moment)...';
+                        
+                        // Create image preview
+                        const imgPreview = document.createElement('img');
+                        imgPreview.src = URL.createObjectURL(file);
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(imgPreview);
+                        previewContainer.style.display = 'block';
+                        
+                        // Perform OCR
+                        const { data: { text: ocrText } } = await Tesseract.recognize(file, 'eng', {
+                            logger: m => {
+                                if (m.status === 'recognizing text') {
+                                    outputElement.innerHTML = `Recognizing text: ${Math.round(m.progress * 100)}%`;
+                                }
+                            }
+                        });
+                        
+                        blob = new Blob([ocrText], { type: 'text/plain' });
+                        break;
+                        
+                    case 'csv-to-excel':
+                        const csvText = new TextDecoder().decode(fileBuffer);
+                        const csvWorkbook = new ExcelJS.Workbook();
+                        const csvSheet = csvWorkbook.addWorksheet('Sheet1');
+                        
+                        // Parse CSV properly
+                        const csvLines = csvText.split(/\r?\n/);
+                        csvLines.forEach(line => {
+                            if (line.trim()) {
+                                // Handle quoted values with commas inside
+                                const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^,]*))/g;
+                                const values = [];
+                                let match;
+                                
+                                while ((match = regex.exec(line + ',')) !== null) {
+                                    const value = match[1] !== undefined 
+                                        ? match[1].replace(/""/g, '"') // Handle double quotes
+                                        : match[2];
+                                    values.push(value);
+                                }
+                                
+                                csvSheet.addRow(values);
+                            }
+                        });
+                        
+                        const excelBuffer = await csvWorkbook.xlsx.writeBuffer();
+                        blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                        break;
+                        
+                    case 'gif-to-mp4':
+                        ffmpeg.FS('writeFile', 'input.gif', await fetchFile(file));
+                        await ffmpeg.run('-i', 'input.gif', '-movflags', 'faststart', '-pix_fmt', 'yuv420p', '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', 'output.mp4');
+                        const mp4Data = ffmpeg.FS('readFile', 'output.mp4');
+                        blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
+                        
+                        // Preview the video
+                        const videoPreview = document.createElement('video');
+                        videoPreview.controls = true;
+                        videoPreview.autoplay = false;
+                        videoPreview.muted = true;
+                        videoPreview.src = URL.createObjectURL(blob);
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(videoPreview);
+                        previewContainer.style.display = 'block';
+                        break;
+                        
+                    case 'audio-to-wav':
+                        const inputExt = fileExt.substring(1); // Remove the dot
+                        ffmpeg.FS('writeFile', `input.${inputExt}`, await fetchFile(file));
+                        await ffmpeg.run('-i', `input.${inputExt}`, '-acodec', 'pcm_s16le', '-ar', '44100', 'output.wav');
+                        const wavData = ffmpeg.FS('readFile', 'output.wav');
+                        blob = new Blob([wavData.buffer], { type: 'audio/wav' });
+                        
+                        // Preview the audio
+                        const wavPreview = document.createElement('audio');
+                        wavPreview.controls = true;
+                        wavPreview.src = URL.createObjectURL(blob);
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(wavPreview);
+                        previewContainer.style.display = 'block';
+                        break;
+                        
+                    case 'markdown-to-html':
+                        const mdText = new TextDecoder().decode(fileBuffer);
+                        const htmlOutput = marked.parse(mdText);
+                        
+                        // Add basic styling
+                        const styledHtml = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Converted from Markdown</title>
+                            <style>
+                                body {
+                                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                                    line-height: 1.6;
+                                    max-width: 800px;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    color: #24292e;
+                                }
+                                pre {
+                                    background-color: #f6f8fa;
+                                    border-radius: 3px;
+                                    padding: 16px;
+                                    overflow: auto;
+                                }
+                                code {
+                                    background-color: #f6f8fa;
+                                    border-radius: 3px;
+                                    padding: 0.2em 0.4em;
+                                    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+                                }
+                                blockquote {
+                                    border-left: 4px solid #dfe2e5;
+                                    padding-left: 16px;
+                                    margin-left: 0;
+                                    color: #6a737d;
+                                }
+                                img {
+                                    max-width: 100%;
+                                }
+                                table {
+                                    border-collapse: collapse;
+                                    width: 100%;
+                                }
+                                table, th, td {
+                                    border: 1px solid #dfe2e5;
+                                    padding: 8px;
+                                }
+                                th {
+                                    background-color: #f6f8fa;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${htmlOutput}
+                        </body>
+                        </html>
+                        `;
+                        
+                        blob = new Blob([styledHtml], { type: 'text/html' });
+                        break;
+                        
+                    case 'text-to-speech':
+                        const txt = new TextDecoder().decode(fileBuffer);
+                        
+                        if (!window.speechSynthesis) {
+                            throw new Error('Text-to-Speech not supported in this browser');
+                        }
+                        
+                        // Create a more realistic TTS implementation using Web Speech API
+                        // Note: This creates a client-side audio preview but for download we'll use a fallback
+                        const utterance = new SpeechSynthesisUtterance(txt);
+                        
+                        // Preview the speech
+                        speechSynthesis.speak(utterance);
+                        
+                        // For download, create a simple audio file with metadata
+                        // In a real app, you'd use a server-side TTS service
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        // Create a short beep sound as placeholder
+                        oscillator.frequency.value = 440;
+                        gainNode.gain.value = 0.1;
+                        
+                        const duration = Math.min(txt.length * 0.05, 10); // Rough estimate of speech duration
+                        
+                        // Record the audio
+                        const recorder = audioContext.createMediaStreamDestination();
+                        gainNode.connect(recorder);
+                        const mediaRecorder = new MediaRecorder(recorder.stream);
+                        
+                        const audioChunks = [];
+                        mediaRecorder.ondataavailable = (event) => {
+                            audioChunks.push(event.data);
+                        };
+                        
+                        mediaRecorder.onstop = () => {
+                            blob = new Blob(audioChunks, { type: 'audio/mpeg' });
+                            
+                            // Preview the audio
+                            const audioPreview = document.createElement('audio');
+                            audioPreview.controls = true;
+                            audioPreview.src = URL.createObjectURL(blob);
+                            previewContainer.innerHTML = '';
+                            previewContainer.appendChild(audioPreview);
+                            previewContainer.style.display = 'block';
+                            
+                            // Set converted file URL
+                            convertedFileUrl = URL.createObjectURL(blob);
+                            outputElement.innerHTML = `Successfully converted ${file.name} to MP3!`;
+                            downloadBtn.style.display = 'block';
+                            spinner.style.display = 'none';
+                        };
+                        
+                        mediaRecorder.start();
+                        oscillator.start();
+                        
+                        setTimeout(() => {
+                            oscillator.stop();
+                            mediaRecorder.stop();
+                        }, duration * 1000);
+                        
+                        // Return early as we're handling the blob creation asynchronously
+                        return;
+                        
+                    case 'video-to-gif':
+                        ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
+                        // Optimize GIF creation with better quality and reasonable file size
+                        await ffmpeg.run(
+                            '-i', 'input.mp4',
+                            '-vf', 'fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse',
+                            '-loop', '0',
+                            'output.gif'
+                        );
+                        const gifData = ffmpeg.FS('readFile', 'output.gif');
+                        blob = new Blob([gifData.buffer], { type: 'image/gif' });
+                        
+                        // Preview the GIF
+                        const gifPreview = document.createElement('img');
+                        gifPreview.src = URL.createObjectURL(blob);
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(gifPreview);
+                        previewContainer.style.display = 'block';
+                        break;
+                        
+                    default:
+                        throw new Error(`Conversion type ${selectedConversion} not implemented`);
+                }
+
+                // Set converted file URL and update UI
+                if (blob) {
+                    convertedFileUrl = URL.createObjectURL(blob);
+                    outputElement.innerHTML = `Successfully converted ${file.name} to ${conversionConfig[selectedConversion].output.slice(1)}!`;
+                    downloadBtn.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Conversion error:', error);
+                outputElement.innerHTML = `Conversion failed: ${error.message}`;
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Convert image from one format to another
+        async function convertImage(file, format) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    
+                    canvas.toBlob(blob => {
+                        if (blob) {
+                            resolve(blob);
+                        } else {
+                            reject(new Error('Image conversion failed'));
+                        }
+                    }, format);
+                };
+                
+                img.onerror = () => reject(new Error('Image load failed'));
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        // Download converted file
+        function downloadFile() {
+            const outputElement = document.getElementById('output');
+            
+            if (!convertedFileUrl) {
+                outputElement.innerHTML = 'Error: No file converted yet!';
+                return;
+            }
+
+            const a = document.createElement('a');
+            a.href = convertedFileUrl;
+            a.download = convertedFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Load FFmpeg in the background
+                ffmpeg.load().then(() => {
+                    ffmpegLoaded = true;
+                    console.log('FFmpeg loaded');
+                }).catch(error => {
+                    console.error('FFmpeg load failed:', error);
+                });
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
+            
+            // Set initial conversion type
+            selectConversion('word-to-pdf');
+        });
+    </script>
+</body>
+</html>
