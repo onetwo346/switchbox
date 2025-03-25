@@ -202,6 +202,7 @@
                 <div class="conversion-btn" data-type="jpg-to-png">JPG to PNG</div>
                 <div class="conversion-btn" data-type="png-to-jpg">PNG to JPG</div>
                 <div class="conversion-btn" data-type="image-to-jpg">Image to JPG</div>
+                <div class="conversion-btn" data-type="jpeg-to-jpg">JPEG to JPG</div>
                 <div class="conversion-btn" data-type="excel-to-pdf">Excel to PDF</div>
                 <div class="conversion-btn" data-type="pdf-to-text">PDF to Text</div>
                 <div class="conversion-btn" data-type="mp4-to-mp3">MP4 to MP3</div>
@@ -235,12 +236,43 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>
     <script src="https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
     <script>
-        // Conversion configuration (previous configuration remains the same, 
-        // with an additional conversion type for image-to-jpg)
         const conversionConfig = {
-            // ... (previous configurations)
+            // Existing conversion configurations...
             
-            // New conversion type for image to JPG
+            // New conversion type for JPEG to JPG
+            'jpeg-to-jpg': { 
+                input: '.jpeg', 
+                output: '.jpg', 
+                mime: 'image/jpeg',
+                convert: async (file) => {
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            const ctx = canvas.getContext('2d');
+                            
+                            // White background for transparency
+                            ctx.fillStyle = 'white';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            
+                            ctx.drawImage(img, 0, 0);
+                            canvas.toBlob(blob => {
+                                if (blob) {
+                                    resolve(blob);
+                                } else {
+                                    reject(new Error('Conversion to JPG failed'));
+                                }
+                            }, 'image/jpeg', 0.9);
+                        };
+                        img.onerror = () => reject(new Error('Image load failed'));
+                        img.src = URL.createObjectURL(file);
+                    });
+                }
+            },
+
+            // Existing image-to-jpg conversion remains the same
             'image-to-jpg': { 
                 input: '.png,.webp,.gif,.bmp,.tiff', 
                 output: '.jpg', 
@@ -274,7 +306,6 @@
             }
         };
 
-        // The rest of the JavaScript remains the same as in the previous implementation
         let selectedConversionType = null;
         let convertedFile = null;
 
