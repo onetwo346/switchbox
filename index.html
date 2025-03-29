@@ -155,6 +155,26 @@
             transform: scale(1.1);
         }
 
+        /* Text to PDF specific styles */
+        #text-input-container {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        #text-input {
+            width: 100%;
+            min-height: 200px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border: 1px solid var(--secondary-accent);
+            border-radius: 5px;
+            resize: vertical;
+            font-family: 'Montserrat', sans-serif;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .conversion-grid {
@@ -214,12 +234,18 @@
                 <div class="conversion-btn" data-type="markdown-to-html">Markdown to HTML</div>
                 <div class="conversion-btn" data-type="text-to-speech">Text to Speech</div>
                 <div class="conversion-btn" data-type="video-to-gif">Video to GIF</div>
+                <div class="conversion-btn" data-type="text-to-pdf">Text to PDF</div>
             </div>
 
             <div class="upload-section">
                 <input type="file" id="file-input">
                 <p id="file-type-hint">Select a conversion type first</p>
                 <button onclick="convertFile()" class="primary-btn">Convert</button>
+            </div>
+
+            <div id="text-input-container">
+                <textarea id="text-input" placeholder="Enter your text here to convert to PDF..."></textarea>
+                <button onclick="convertTextToPDF()" class="primary-btn">Create PDF</button>
             </div>
 
             <div class="output-section" id="output-section">
@@ -303,6 +329,85 @@
                         img.src = URL.createObjectURL(file);
                     });
                 }
+            },
+
+            // New text-to-pdf conversion
+            'text-to-pdf': {
+                input: 'text',
+                output: '.pdf',
+                mime: 'application/pdf',
+                convert: async (text) => {
+                    try {
+                        // Create a new PDF document
+                        const { PDFDocument, rgb, StandardFonts } = PDFLib;
+                        const pdfDoc = await PDFDocument.create();
+                        
+                        // Add a page
+                        const page = pdfDoc.addPage([595, 842]); // A4 size
+                        
+                        // Get the standard font
+                        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                        
+                        // Set margins and text properties
+                        const margin = 50;
+                        const fontSize = 12;
+                        const lineHeight = fontSize * 1.2;
+                        const pageWidth = page.getWidth() - 2 * margin;
+                        const maxLines = Math.floor((page.getHeight() - 2 * margin) / lineHeight);
+                        
+                        // Format text to fit page width
+                        const words = text.split(' ');
+                        let lines = [];
+                        let currentLine = words[0];
+                        
+                        for (let i = 1; i < words.length; i++) {
+                            const word = words[i];
+                            const width = font.widthOfTextAtSize(currentLine + ' ' + word, fontSize);
+                            
+                            if (width < pageWidth) {
+                                currentLine += ' ' + word;
+                            } else {
+                                lines.push(currentLine);
+                                currentLine = word;
+                            }
+                        }
+                        
+                        if (currentLine) {
+                            lines.push(currentLine);
+                        }
+                        
+                        // Add text to pages
+                        let pageIndex = 0;
+                        let lineIndex = 0;
+                        
+                        while (lineIndex < lines.length) {
+                            if (pageIndex > 0) {
+                                const newPage = pdfDoc.addPage([595, 842]);
+                                page = newPage;
+                            }
+                            
+                            for (let i = 0; i < maxLines && lineIndex < lines.length; i++) {
+                                page.drawText(lines[lineIndex], {
+                                    x: margin,
+                                    y: page.getHeight() - margin - (i * lineHeight),
+                                    size: fontSize,
+                                    font: font,
+                                    color: rgb(0, 0, 0)
+                                });
+                                lineIndex++;
+                            }
+                            
+                            pageIndex++;
+                        }
+                        
+                        // Save the document
+                        const pdfBytes = await pdfDoc.save();
+                        return new Blob([pdfBytes], { type: 'application/pdf' });
+                    } catch (error) {
+                        console.error('PDF creation error:', error);
+                        throw new Error('Failed to create PDF: ' + error.message);
+                    }
+                }
             }
         };
 
@@ -321,17 +426,63 @@
                 // Set selected conversion type
                 selectedConversionType = this.dataset.type;
                 
-                // Update file input accept attribute
-                const fileInput = document.getElementById('file-input');
-                fileInput.accept = conversionConfig[selectedConversionType].input;
+                // Special handling for text-to-pdf
+                const fileInputSection = document.querySelector('.upload-section');
+                const textInputContainer = document.getElementById('text-input-container');
                 
-                // Update file type hint
-                document.getElementById('file-type-hint').textContent = 
-                    `Upload ${conversionConfig[selectedConversionType].input} file`;
+                if (selectedConversionType === 'text-to-pdf') {
+                    fileInputSection.style.display = 'none';
+                    textInputContainer.style.display = 'block';
+                } else {
+                    fileInputSection.style.display = 'block';
+                    textInputContainer.style.display = 'none';
+                    
+                    // Update file input accept attribute
+                    const fileInput = document.getElementById('file-input');
+                    fileInput.accept = conversionConfig[selectedConversionType].input;
+                    
+                    // Update file type hint
+                    document.getElementById('file-type-hint').textContent = 
+                        `Upload ${conversionConfig[selectedConversionType].input} file`;
+                }
             });
         });
 
-        // Conversion function
+        // Text to PDF conversion function
+        async function convertTextToPDF() {
+            const textInput = document.getElementById('text-input');
+            const outputSection = document.getElementById('output-section');
+            const downloadBtn = document.getElementById('download-btn');
+            
+            // Check if text is entered
+            const text = textInput.value.trim();
+            if (!text) {
+                alert('Please enter some text to convert');
+                return;
+            }
+            
+            try {
+                outputSection.textContent = 'Creating PDF...';
+                convertedFile = await conversionConfig['text-to-pdf'].convert(text);
+                
+                outputSection.textContent = 'PDF creation successful!';
+                
+                downloadBtn.style.display = 'block';
+                downloadBtn.onclick = () => {
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(convertedFile);
+                    downloadLink.download = `converted.pdf`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                };
+            } catch (error) {
+                outputSection.textContent = `PDF creation failed: ${error.message}`;
+                console.error(error);
+            }
+        }
+
+        // Conversion function for file uploads
         async function convertFile() {
             const fileInput = document.getElementById('file-input');
             const outputSection = document.getElementById('output-section');
