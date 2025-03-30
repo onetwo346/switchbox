@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SwitchBox - Universal File Converter</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -155,7 +155,6 @@
             transform: scale(1.1);
         }
 
-        /* Text to PDF specific styles */
         #text-input-container {
             display: none;
             width: 100%;
@@ -165,7 +164,8 @@
 
         #text-input {
             width: 100%;
-            min-height: 200px;
+            min-height: 150px;
+            max-height: 50vh;
             padding: 10px;
             background: rgba(255, 255, 255, 0.1);
             color: var(--text-color);
@@ -173,9 +173,10 @@
             border-radius: 5px;
             resize: vertical;
             font-family: 'Montserrat', sans-serif;
+            font-size: 16px; /* Base font size for better mobile readability */
+            touch-action: manipulation;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .conversion-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -184,6 +185,12 @@
             .conversion-btn {
                 font-size: 0.8rem;
                 padding: 10px;
+            }
+            
+            #text-input {
+                min-height: 120px;
+                max-height: 40vh;
+                font-size: 16px;
             }
         }
 
@@ -203,6 +210,17 @@
 
             .primary-btn {
                 padding: 10px 30px;
+            }
+            
+            #text-input {
+                min-height: 100px;
+                max-height: 35vh;
+                padding: 8px;
+                font-size: 16px; /* Keep 16px as it's the ideal size for mobile input */
+            }
+            
+            #text-input-container {
+                max-width: 100%; /* Full width on very small screens */
             }
         }
     </style>
@@ -263,9 +281,6 @@
     <script src="https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
     <script>
         const conversionConfig = {
-            // Existing conversion configurations...
-            
-            // New conversion type for JPEG to JPG
             'jpeg-to-jpg': { 
                 input: '.jpeg', 
                 output: '.jpg', 
@@ -278,18 +293,12 @@
                             canvas.width = img.width;
                             canvas.height = img.height;
                             const ctx = canvas.getContext('2d');
-                            
-                            // White background for transparency
                             ctx.fillStyle = 'white';
                             ctx.fillRect(0, 0, canvas.width, canvas.height);
-                            
                             ctx.drawImage(img, 0, 0);
                             canvas.toBlob(blob => {
-                                if (blob) {
-                                    resolve(blob);
-                                } else {
-                                    reject(new Error('Conversion to JPG failed'));
-                                }
+                                if (blob) resolve(blob);
+                                else reject(new Error('Conversion to JPG failed'));
                             }, 'image/jpeg', 0.9);
                         };
                         img.onerror = () => reject(new Error('Image load failed'));
@@ -298,7 +307,6 @@
                 }
             },
 
-            // Existing image-to-jpg conversion remains the same
             'image-to-jpg': { 
                 input: '.png,.webp,.gif,.bmp,.tiff', 
                 output: '.jpg', 
@@ -311,18 +319,12 @@
                             canvas.width = img.width;
                             canvas.height = img.height;
                             const ctx = canvas.getContext('2d');
-                            
-                            // White background for transparency
                             ctx.fillStyle = 'white';
                             ctx.fillRect(0, 0, canvas.width, canvas.height);
-                            
                             ctx.drawImage(img, 0, 0);
                             canvas.toBlob(blob => {
-                                if (blob) {
-                                    resolve(blob);
-                                } else {
-                                    reject(new Error('Conversion to JPG failed'));
-                                }
+                                if (blob) resolve(blob);
+                                else reject(new Error('Conversion to JPG failed'));
                             }, 'image/jpeg', 0.9);
                         };
                         img.onerror = () => reject(new Error('Image load failed'));
@@ -331,76 +333,74 @@
                 }
             },
 
-            // New text-to-pdf conversion
             'text-to-pdf': {
                 input: 'text',
                 output: '.pdf',
                 mime: 'application/pdf',
                 convert: async (text) => {
                     try {
-                        // Create a new PDF document
                         const { PDFDocument, rgb, StandardFonts } = PDFLib;
                         const pdfDoc = await PDFDocument.create();
-                        
-                        // Add a page
-                        const page = pdfDoc.addPage([595, 842]); // A4 size
-                        
-                        // Get the standard font
+                        let page = pdfDoc.addPage([595, 842]); // A4 size
                         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-                        
-                        // Set margins and text properties
                         const margin = 50;
                         const fontSize = 12;
                         const lineHeight = fontSize * 1.2;
                         const pageWidth = page.getWidth() - 2 * margin;
-                        const maxLines = Math.floor((page.getHeight() - 2 * margin) / lineHeight);
-                        
-                        // Format text to fit page width
-                        const words = text.split(' ');
-                        let lines = [];
-                        let currentLine = words[0];
-                        
-                        for (let i = 1; i < words.length; i++) {
-                            const word = words[i];
-                            const width = font.widthOfTextAtSize(currentLine + ' ' + word, fontSize);
-                            
-                            if (width < pageWidth) {
-                                currentLine += ' ' + word;
-                            } else {
-                                lines.push(currentLine);
-                                currentLine = word;
+                        const maxLinesPerPage = Math.floor((page.getHeight() - 2 * margin) / lineHeight);
+
+                        // Split text by newlines to handle paragraphs
+                        const paragraphs = text.split('\n');
+                        let allLines = [];
+
+                        // Process each paragraph for word wrapping
+                        for (const paragraph of paragraphs) {
+                            const words = paragraph.trim().split(/\s+/);
+                            let currentLine = '';
+
+                            for (const word of words) {
+                                const testLine = currentLine ? `${currentLine} ${word}` : word;
+                                const width = font.widthOfTextAtSize(testLine, fontSize);
+
+                                if (width < pageWidth) {
+                                    currentLine = testLine;
+                                } else {
+                                    if (currentLine) allLines.push(currentLine);
+                                    currentLine = word;
+                                }
                             }
+
+                            if (currentLine) allLines.push(currentLine);
+                            allLines.push(''); // Add an empty line for paragraph spacing
                         }
-                        
-                        if (currentLine) {
-                            lines.push(currentLine);
-                        }
-                        
-                        // Add text to pages
-                        let pageIndex = 0;
+
+                        // Remove the last empty line if it exists
+                        if (allLines[allLines.length - 1] === '') allLines.pop();
+
+                        // Draw lines on pages
                         let lineIndex = 0;
-                        
-                        while (lineIndex < lines.length) {
-                            if (pageIndex > 0) {
-                                const newPage = pdfDoc.addPage([595, 842]);
-                                page = newPage;
+                        let currentLineOnPage = 0;
+
+                        while (lineIndex < allLines.length) {
+                            if (currentLineOnPage >= maxLinesPerPage) {
+                                page = pdfDoc.addPage([595, 842]);
+                                currentLineOnPage = 0;
                             }
-                            
-                            for (let i = 0; i < maxLines && lineIndex < lines.length; i++) {
-                                page.drawText(lines[lineIndex], {
+
+                            const line = allLines[lineIndex];
+                            if (line) { // Skip empty lines for drawing, but they still take up space
+                                page.drawText(line, {
                                     x: margin,
-                                    y: page.getHeight() - margin - (i * lineHeight),
+                                    y: page.getHeight() - margin - (currentLineOnPage * lineHeight),
                                     size: fontSize,
                                     font: font,
                                     color: rgb(0, 0, 0)
                                 });
-                                lineIndex++;
                             }
-                            
-                            pageIndex++;
+                            lineIndex++;
+                            currentLineOnPage++;
                         }
-                        
-                        // Save the document
+
                         const pdfBytes = await pdfDoc.save();
                         return new Blob([pdfBytes], { type: 'application/pdf' });
                     } catch (error) {
@@ -414,64 +414,54 @@
         let selectedConversionType = null;
         let convertedFile = null;
 
-        // Event listeners for conversion buttons
         document.querySelectorAll('.conversion-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                // Remove active class from all buttons
                 document.querySelectorAll('.conversion-btn').forEach(b => b.classList.remove('active'));
-                
-                // Add active class to clicked button
                 this.classList.add('active');
-                
-                // Set selected conversion type
                 selectedConversionType = this.dataset.type;
-                
-                // Special handling for text-to-pdf
+
                 const fileInputSection = document.querySelector('.upload-section');
                 const textInputContainer = document.getElementById('text-input-container');
-                
+
                 if (selectedConversionType === 'text-to-pdf') {
                     fileInputSection.style.display = 'none';
                     textInputContainer.style.display = 'block';
+                    // Focus the textarea with a slight delay to ensure display is complete
+                    setTimeout(() => {
+                        const textInput = document.getElementById('text-input');
+                        textInput.focus();
+                    }, 100);
                 } else {
                     fileInputSection.style.display = 'block';
                     textInputContainer.style.display = 'none';
-                    
-                    // Update file input accept attribute
                     const fileInput = document.getElementById('file-input');
-                    fileInput.accept = conversionConfig[selectedConversionType].input;
-                    
-                    // Update file type hint
+                    fileInput.accept = conversionConfig[selectedConversionType]?.input || '';
                     document.getElementById('file-type-hint').textContent = 
-                        `Upload ${conversionConfig[selectedConversionType].input} file`;
+                        `Upload ${conversionConfig[selectedConversionType]?.input || 'file'}`;
                 }
             });
         });
 
-        // Text to PDF conversion function
         async function convertTextToPDF() {
             const textInput = document.getElementById('text-input');
             const outputSection = document.getElementById('output-section');
             const downloadBtn = document.getElementById('download-btn');
-            
-            // Check if text is entered
             const text = textInput.value.trim();
+
             if (!text) {
-                alert('Please enter some text to convert');
+                outputSection.textContent = 'Please enter some text to convert';
                 return;
             }
-            
+
             try {
                 outputSection.textContent = 'Creating PDF...';
                 convertedFile = await conversionConfig['text-to-pdf'].convert(text);
-                
                 outputSection.textContent = 'PDF creation successful!';
-                
                 downloadBtn.style.display = 'block';
                 downloadBtn.onclick = () => {
                     const downloadLink = document.createElement('a');
                     downloadLink.href = URL.createObjectURL(convertedFile);
-                    downloadLink.download = `converted.pdf`;
+                    downloadLink.download = 'converted.pdf';
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
@@ -482,40 +472,34 @@
             }
         }
 
-        // Conversion function for file uploads
         async function convertFile() {
             const fileInput = document.getElementById('file-input');
             const outputSection = document.getElementById('output-section');
             const downloadBtn = document.getElementById('download-btn');
 
-            // Check if conversion type is selected
             if (!selectedConversionType) {
-                alert('Please select a conversion type first');
+                outputSection.textContent = 'Please select a conversion type first';
                 return;
             }
 
-            // Check if file is selected
             const file = fileInput.files[0];
             if (!file) {
-                alert('Please select a file');
+                outputSection.textContent = 'Please select a file';
                 return;
             }
 
-            // Validate file type
             const config = conversionConfig[selectedConversionType];
             const validExtensions = config.input.split(',');
             const fileExt = '.' + file.name.split('.').pop().toLowerCase();
             if (!validExtensions.some(ext => ext === fileExt)) {
-                alert(`Invalid file type. Please upload a ${config.input} file.`);
+                outputSection.textContent = `Invalid file type. Please upload a ${config.input} file.`;
                 return;
             }
 
             try {
                 outputSection.textContent = 'Converting...';
                 convertedFile = await config.convert(file);
-                
                 outputSection.textContent = `Conversion successful! File converted to ${config.output}`;
-                
                 downloadBtn.style.display = 'block';
                 downloadBtn.onclick = () => {
                     const downloadLink = document.createElement('a');
@@ -531,16 +515,24 @@
             }
         }
 
-        // Show main page function
         function showMainPage() {
             document.getElementById('intro-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
         }
 
-        // Prevent pinch-zoom on mobile
+        // Improve mobile input handling
         document.addEventListener('touchmove', function(event) {
-            if (event.scale !== 1) { event.preventDefault(); }
+            if (event.scale !== 1) event.preventDefault();
         }, { passive: false });
+        
+        // Prevent zoom when focusing textarea
+        document.getElementById('text-input').addEventListener('focus', function(event) {
+            document.body.style.touchAction = 'none';
+        });
+        
+        document.getElementById('text-input').addEventListener('blur', function(event) {
+            document.body.style.touchAction = 'manipulation';
+        });
     </script>
 </body>
 </html>
