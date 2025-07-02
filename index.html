@@ -3,536 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SwitchBox - Universal File Converter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-bg: #0d0d2b;
-            --secondary-bg: #2b0d3d;
-            --accent-color: #ff00ff;
-            --secondary-accent: #00ffff;
-            --text-color: #ffffff;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
-            color: var(--text-color);
-            min-height: 100vh;
-            overflow-x: hidden;
-            touch-action: manipulation;
-        }
-
-        #app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        #intro-page {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            animation: cosmicShift 15s infinite;
-        }
-
-        @keyframes cosmicShift {
-            0% { background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg)); }
-            50% { background: linear-gradient(135deg, var(--secondary-bg), #0d2b3d); }
-            100% { background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg)); }
-        }
-
-        .main-title {
-            font-size: clamp(2.5rem, 7vw, 3.5rem);
-            text-shadow: 0 0 15px var(--accent-color);
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-
-        .primary-btn {
-            padding: 15px 40px;
-            font-size: clamp(1rem, 3vw, 1.5rem);
-            background: var(--accent-color);
-            border: none;
-            border-radius: 50px;
-            color: var(--primary-bg);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .primary-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
-        }
-
-        #main-page {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        .conversion-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            width: 100%;
-            max-width: 1000px;
-            margin-bottom: 20px;
-        }
-
-        .conversion-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid var(--secondary-accent);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .conversion-btn:hover, .conversion-btn.active {
-            background: var(--secondary-accent);
-            color: var(--primary-bg);
-            transform: scale(1.05);
-        }
-
-        .upload-section {
-            width: 100%;
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed var(--accent-color);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        #file-input {
-            margin: 15px 0;
-            width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            border: 1px solid var(--secondary-accent);
-            border-radius: 5px;
-        }
-
-        .output-section {
-            width: 100%;
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--accent-color);
-            border-radius: 10px;
-            padding: 20px;
-            min-height: 100px;
-            margin-bottom: 20px;
-            word-break: break-word;
-        }
-
-        .download-btn {
-            background: var(--accent-color);
-            color: var(--text-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .download-btn:hover {
-            transform: scale(1.1);
-        }
-
-        #text-input-container {
-            display: none;
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 20px;
-        }
-
-        #text-input {
-            width: 100%;
-            min-height: 150px;
-            max-height: 50vh;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            border: 1px solid var(--secondary-accent);
-            border-radius: 5px;
-            resize: vertical;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 16px; /* Base font size for better mobile readability */
-            touch-action: manipulation;
-        }
-
-        @media (max-width: 768px) {
-            .conversion-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .conversion-btn {
-                font-size: 0.8rem;
-                padding: 10px;
-            }
-            
-            #text-input {
-                min-height: 120px;
-                max-height: 40vh;
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .conversion-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .conversion-btn {
-                font-size: 0.7rem;
-                padding: 8px;
-            }
-
-            .main-title {
-                font-size: 2rem;
-            }
-
-            .primary-btn {
-                padding: 10px 30px;
-            }
-            
-            #text-input {
-                min-height: 100px;
-                max-height: 35vh;
-                padding: 8px;
-                font-size: 16px; /* Keep 16px as it's the ideal size for mobile input */
-            }
-            
-            #text-input-container {
-                max-width: 100%; /* Full width on very small screens */
-            }
-        }
-    </style>
+    <title>SwitchBox Pro - Universal File Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div id="app-container">
-        <div id="intro-page">
-            <h1 class="main-title">SwitchBox</h1>
-            <p>Universal File Converter</p>
-            <button class="primary-btn" onclick="showMainPage()">Start Converting</button>
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen hidden">
+            <div class="loading-content">
+                <div class="loading-logo">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h2>SwitchBox Pro</h2>
+                <div class="loading-spinner"></div>
+                <p>Loading powerful conversion tools...</p>
+            </div>
         </div>
 
-        <div id="main-page">
-            <div class="conversion-grid">
-                <div class="conversion-btn" data-type="word-to-pdf">Word to PDF</div>
-                <div class="conversion-btn" data-type="pdf-to-word">PDF to Word</div>
-                <div class="conversion-btn" data-type="jpg-to-png">JPG to PNG</div>
-                <div class="conversion-btn" data-type="png-to-jpg">PNG to JPG</div>
-                <div class="conversion-btn" data-type="image-to-jpg">Image to JPG</div>
-                <div class="conversion-btn" data-type="jpeg-to-jpg">JPEG to JPG</div>
-                <div class="conversion-btn" data-type="excel-to-pdf">Excel to PDF</div>
-                <div class="conversion-btn" data-type="pdf-to-text">PDF to Text</div>
-                <div class="conversion-btn" data-type="mp4-to-mp3">MP4 to MP3</div>
-                <div class="conversion-btn" data-type="html-to-pdf">HTML to PDF</div>
-                <div class="conversion-btn" data-type="image-to-text">Image to Text</div>
-                <div class="conversion-btn" data-type="csv-to-excel">CSV to Excel</div>
-                <div class="conversion-btn" data-type="gif-to-mp4">GIF to MP4</div>
-                <div class="conversion-btn" data-type="audio-to-wav">Audio to WAV</div>
-                <div class="conversion-btn" data-type="markdown-to-html">Markdown to HTML</div>
-                <div class="conversion-btn" data-type="text-to-speech">Text to Speech</div>
-                <div class="conversion-btn" data-type="video-to-gif">Video to GIF</div>
-                <div class="conversion-btn" data-type="text-to-pdf">Text to PDF</div>
+        <!-- Intro Page -->
+        <div id="intro-page" class="page">
+            <div class="intro-content">
+                <div class="logo-container">
+                    <div class="logo">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h1 class="main-title">SwitchBox Pro</h1>
+                    <p class="subtitle">Universal File Converter</p>
             </div>
 
-            <div class="upload-section">
-                <input type="file" id="file-input">
-                <p id="file-type-hint">Select a conversion type first</p>
-                <button onclick="convertFile()" class="primary-btn">Convert</button>
+                <div class="features-grid">
+                    <div class="feature">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Lightning Fast</h3>
+                        <p>Convert files instantly in your browser</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>100% Secure</h3>
+                        <p>Files never leave your device</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>Mobile Ready</h3>
+                        <p>Works perfectly on all devices</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-infinity"></i>
+                        <h3>Unlimited</h3>
+                        <p>No file size or conversion limits</p>
+                    </div>
+                </div>
+
+                <button class="primary-btn" onclick="showMainPage()">
+                    <i class="fas fa-rocket"></i>
+                    Start Converting
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Page -->
+        <div id="main-page" class="page hidden">
+            <header class="app-header">
+                <div class="header-content">
+                    <div class="logo-small">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>SwitchBox Pro</span>
+                    </div>
+                    <div class="header-actions">
+                        <button class="icon-btn" onclick="showSettings()" title="Settings">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button class="icon-btn" onclick="showHelp()" title="Help">
+                            <i class="fas fa-question-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <!-- Conversion Categories -->
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="documents">
+                        <i class="fas fa-file-alt"></i>
+                        Documents
+                    </button>
+                    <button class="category-tab" data-category="images">
+                        <i class="fas fa-image"></i>
+                        Images
+                    </button>
+                    <button class="category-tab" data-category="audio">
+                        <i class="fas fa-music"></i>
+                        Audio
+                    </button>
+                    <button class="category-tab" data-category="video">
+                        <i class="fas fa-video"></i>
+                        Video
+                    </button>
+                    <button class="category-tab" data-category="data">
+                        <i class="fas fa-table"></i>
+                        Data
+                    </button>
+                    <button class="category-tab" data-category="web">
+                        <i class="fas fa-globe"></i>
+                        Web
+                    </button>
+                </div>
+
+                <!-- Conversion Grid -->
+                <div class="conversion-grid" id="conversion-grid">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- File Upload Section -->
+                <div class="upload-section" id="upload-section">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Drop files here or click to upload</h3>
+                            <p id="file-type-hint">Select a conversion type first</p>
+                            <input type="file" id="file-input" multiple>
+                            <button class="upload-btn" onclick="document.getElementById('file-input').click()">
+                                Choose Files
+                            </button>
+                        </div>
             </div>
 
-            <div id="text-input-container">
-                <textarea id="text-input" placeholder="Enter your text here to convert to PDF..."></textarea>
-                <button onclick="convertTextToPDF()" class="primary-btn">Create PDF</button>
+                    <div class="file-list" id="file-list">
+                        <!-- File items will be added here -->
+                    </div>
+
+                    <div class="conversion-options">
+                        <div class="option-group">
+                            <label>Quality:</label>
+                            <select id="quality-select">
+                                <option value="high">High</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label>Format:</label>
+                            <select id="format-select">
+                                <!-- Dynamically populated -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="convert-btn" id="convert-btn" onclick="startConversion()" disabled>
+                        <i class="fas fa-magic"></i>
+                        Convert Files
+                    </button>
+                </div>
+
+                <!-- Text Input Section -->
+                <div class="text-input-section hidden" id="text-input-section">
+                    <div class="text-input-container">
+                        <div class="text-input-header">
+                            <h3>Text to PDF Converter</h3>
+                            <div class="text-actions">
+                                <button class="action-btn" onclick="clearText()">
+                                    <i class="fas fa-trash"></i>
+                                    Clear
+                                </button>
+                                <button class="action-btn" onclick="pasteText()">
+                                    <i class="fas fa-paste"></i>
+                                    Paste
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="text-input" placeholder="Enter your text here..."></textarea>
+                        <div class="text-stats">
+                            <span id="word-count">0 words</span>
+                            <span id="char-count">0 characters</span>
+                        </div>
+                        <button class="convert-btn" onclick="convertTextToPDF()">
+                            <i class="fas fa-file-pdf"></i>
+                            Create PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="progress-section hidden" id="progress-section">
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <h3>Converting Files</h3>
+                            <button class="cancel-btn" onclick="cancelConversion()">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </button>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-text" id="progress-text">Preparing conversion...</div>
+                        <div class="progress-details" id="progress-details"></div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section hidden" id="results-section">
+                    <div class="results-header">
+                        <h3>Conversion Complete</h3>
+                        <button class="action-btn" onclick="clearResults()">
+                            <i class="fas fa-trash"></i>
+                            Clear
+                        </button>
+                    </div>
+                    <div class="results-grid" id="results-grid">
+                        <!-- Results will be added here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Settings</h3>
+                    <button class="close-btn" onclick="closeModal('settings-modal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label>Default Quality:</label>
+                        <select id="default-quality">
+                            <option value="high">High</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Auto-download:</label>
+                        <input type="checkbox" id="auto-download">
+                    </div>
+                    <div class="setting-group">
+                        <label>Dark Mode:</label>
+                        <input type="checkbox" id="dark-mode">
+                    </div>
+                </div>
+            </div>
             </div>
 
-            <div class="output-section" id="output-section">
-                Conversion results will appear here
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Help & Support</h3>
+                    <button class="close-btn" onclick="closeModal('help-modal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-section">
+                        <h4>How to use SwitchBox Pro:</h4>
+                        <ol>
+                            <li>Select a conversion category (Documents, Images, etc.)</li>
+                            <li>Choose your desired conversion type</li>
+                            <li>Upload your files or enter text</li>
+                            <li>Adjust quality and format settings</li>
+                            <li>Click Convert and download your files</li>
+                        </ol>
+                    </div>
+                    <div class="help-section">
+                        <h4>Supported Formats:</h4>
+                        <div class="format-list">
+                            <div><strong>Documents:</strong> PDF, DOC, DOCX, TXT, RTF, ODT</div>
+                            <div><strong>Images:</strong> JPG, PNG, GIF, BMP, TIFF, WEBP, SVG</div>
+                            <div><strong>Audio:</strong> MP3, WAV, FLAC, AAC, OGG, M4A</div>
+                            <div><strong>Video:</strong> MP4, AVI, MOV, MKV, WMV, FLV</div>
+                            <div><strong>Data:</strong> CSV, XLS, XLSX, JSON, XML</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <button id="download-btn" class="download-btn" style="display:none;">Download</button>
         </div>
     </div>
 
+    <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>
     <script src="https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
-    <script>
-        const conversionConfig = {
-            'jpeg-to-jpg': { 
-                input: '.jpeg', 
-                output: '.jpg', 
-                mime: 'image/jpeg',
-                convert: async (file) => {
-                    return new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.fillStyle = 'white';
-                            ctx.fillRect(0, 0, canvas.width, canvas.height);
-                            ctx.drawImage(img, 0, 0);
-                            canvas.toBlob(blob => {
-                                if (blob) resolve(blob);
-                                else reject(new Error('Conversion to JPG failed'));
-                            }, 'image/jpeg', 0.9);
-                        };
-                        img.onerror = () => reject(new Error('Image load failed'));
-                        img.src = URL.createObjectURL(file);
-                    });
-                }
-            },
-
-            'image-to-jpg': { 
-                input: '.png,.webp,.gif,.bmp,.tiff', 
-                output: '.jpg', 
-                mime: 'image/jpeg',
-                convert: async (file) => {
-                    return new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.fillStyle = 'white';
-                            ctx.fillRect(0, 0, canvas.width, canvas.height);
-                            ctx.drawImage(img, 0, 0);
-                            canvas.toBlob(blob => {
-                                if (blob) resolve(blob);
-                                else reject(new Error('Conversion to JPG failed'));
-                            }, 'image/jpeg', 0.9);
-                        };
-                        img.onerror = () => reject(new Error('Image load failed'));
-                        img.src = URL.createObjectURL(file);
-                    });
-                }
-            },
-
-            'text-to-pdf': {
-                input: 'text',
-                output: '.pdf',
-                mime: 'application/pdf',
-                convert: async (text) => {
-                    try {
-                        const { PDFDocument, rgb, StandardFonts } = PDFLib;
-                        const pdfDoc = await PDFDocument.create();
-                        let page = pdfDoc.addPage([595, 842]); // A4 size
-                        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-                        const margin = 50;
-                        const fontSize = 12;
-                        const lineHeight = fontSize * 1.2;
-                        const pageWidth = page.getWidth() - 2 * margin;
-                        const maxLinesPerPage = Math.floor((page.getHeight() - 2 * margin) / lineHeight);
-
-                        // Split text by newlines to handle paragraphs
-                        const paragraphs = text.split('\n');
-                        let allLines = [];
-
-                        // Process each paragraph for word wrapping
-                        for (const paragraph of paragraphs) {
-                            const words = paragraph.trim().split(/\s+/);
-                            let currentLine = '';
-
-                            for (const word of words) {
-                                const testLine = currentLine ? `${currentLine} ${word}` : word;
-                                const width = font.widthOfTextAtSize(testLine, fontSize);
-
-                                if (width < pageWidth) {
-                                    currentLine = testLine;
-                                } else {
-                                    if (currentLine) allLines.push(currentLine);
-                                    currentLine = word;
-                                }
-                            }
-
-                            if (currentLine) allLines.push(currentLine);
-                            allLines.push(''); // Add an empty line for paragraph spacing
-                        }
-
-                        // Remove the last empty line if it exists
-                        if (allLines[allLines.length - 1] === '') allLines.pop();
-
-                        // Draw lines on pages
-                        let lineIndex = 0;
-                        let currentLineOnPage = 0;
-
-                        while (lineIndex < allLines.length) {
-                            if (currentLineOnPage >= maxLinesPerPage) {
-                                page = pdfDoc.addPage([595, 842]);
-                                currentLineOnPage = 0;
-                            }
-
-                            const line = allLines[lineIndex];
-                            if (line) { // Skip empty lines for drawing, but they still take up space
-                                page.drawText(line, {
-                                    x: margin,
-                                    y: page.getHeight() - margin - (currentLineOnPage * lineHeight),
-                                    size: fontSize,
-                                    font: font,
-                                    color: rgb(0, 0, 0)
-                                });
-                            }
-                            lineIndex++;
-                            currentLineOnPage++;
-                        }
-
-                        const pdfBytes = await pdfDoc.save();
-                        return new Blob([pdfBytes], { type: 'application/pdf' });
-                    } catch (error) {
-                        console.error('PDF creation error:', error);
-                        throw new Error('Failed to create PDF: ' + error.message);
-                    }
-                }
-            }
-        };
-
-        let selectedConversionType = null;
-        let convertedFile = null;
-
-        document.querySelectorAll('.conversion-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.conversion-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                selectedConversionType = this.dataset.type;
-
-                const fileInputSection = document.querySelector('.upload-section');
-                const textInputContainer = document.getElementById('text-input-container');
-
-                if (selectedConversionType === 'text-to-pdf') {
-                    fileInputSection.style.display = 'none';
-                    textInputContainer.style.display = 'block';
-                    // Focus the textarea with a slight delay to ensure display is complete
-                    setTimeout(() => {
-                        const textInput = document.getElementById('text-input');
-                        textInput.focus();
-                    }, 100);
-                } else {
-                    fileInputSection.style.display = 'block';
-                    textInputContainer.style.display = 'none';
-                    const fileInput = document.getElementById('file-input');
-                    fileInput.accept = conversionConfig[selectedConversionType]?.input || '';
-                    document.getElementById('file-type-hint').textContent = 
-                        `Upload ${conversionConfig[selectedConversionType]?.input || 'file'}`;
-                }
-            });
-        });
-
-        async function convertTextToPDF() {
-            const textInput = document.getElementById('text-input');
-            const outputSection = document.getElementById('output-section');
-            const downloadBtn = document.getElementById('download-btn');
-            const text = textInput.value.trim();
-
-            if (!text) {
-                outputSection.textContent = 'Please enter some text to convert';
-                return;
-            }
-
-            try {
-                outputSection.textContent = 'Creating PDF...';
-                convertedFile = await conversionConfig['text-to-pdf'].convert(text);
-                outputSection.textContent = 'PDF creation successful!';
-                downloadBtn.style.display = 'block';
-                downloadBtn.onclick = () => {
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = URL.createObjectURL(convertedFile);
-                    downloadLink.download = 'converted.pdf';
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                };
-            } catch (error) {
-                outputSection.textContent = `PDF creation failed: ${error.message}`;
-                console.error(error);
-            }
-        }
-
-        async function convertFile() {
-            const fileInput = document.getElementById('file-input');
-            const outputSection = document.getElementById('output-section');
-            const downloadBtn = document.getElementById('download-btn');
-
-            if (!selectedConversionType) {
-                outputSection.textContent = 'Please select a conversion type first';
-                return;
-            }
-
-            const file = fileInput.files[0];
-            if (!file) {
-                outputSection.textContent = 'Please select a file';
-                return;
-            }
-
-            const config = conversionConfig[selectedConversionType];
-            const validExtensions = config.input.split(',');
-            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
-            if (!validExtensions.some(ext => ext === fileExt)) {
-                outputSection.textContent = `Invalid file type. Please upload a ${config.input} file.`;
-                return;
-            }
-
-            try {
-                outputSection.textContent = 'Converting...';
-                convertedFile = await config.convert(file);
-                outputSection.textContent = `Conversion successful! File converted to ${config.output}`;
-                downloadBtn.style.display = 'block';
-                downloadBtn.onclick = () => {
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = URL.createObjectURL(convertedFile);
-                    downloadLink.download = `converted${config.output}`;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                };
-            } catch (error) {
-                outputSection.textContent = `Conversion failed: ${error.message}`;
-                console.error(error);
-            }
-        }
-
-        function showMainPage() {
-            document.getElementById('intro-page').style.display = 'none';
-            document.getElementById('main-page').style.display = 'flex';
-        }
-
-        // Improve mobile input handling
-        document.addEventListener('touchmove', function(event) {
-            if (event.scale !== 1) event.preventDefault();
-        }, { passive: false });
-        
-        // Prevent zoom when focusing textarea
-        document.getElementById('text-input').addEventListener('focus', function(event) {
-            document.body.style.touchAction = 'none';
-        });
-        
-        document.getElementById('text-input').addEventListener('blur', function(event) {
-            document.body.style.touchAction = 'manipulation';
-        });
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ffmpeg.js/0.12.7/ffmpeg.min.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="config.js"></script>
+    <script src="converters.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
